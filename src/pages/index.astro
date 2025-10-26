@@ -1,0 +1,112 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog'))
+	.filter((post) => !post.data.draft)
+	.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<section>
+				<h1>Blog Posts</h1>
+				<ul class="post-list">
+					{
+						posts.map((post) => (
+							<li class="post-card">
+								<a href={`/blog/${post.id}/`}>
+									<h2>{post.data.title}</h2>
+									<p class="date">
+										<FormattedDate date={post.data.date} />
+									</p>
+									<p class="description">{post.data.description}</p>
+									{post.data.tags && post.data.tags.length > 0 && (
+										<div class="tags">
+											{post.data.tags.map((tag) => (
+												<span class="tag">{tag}</span>
+											))}
+										</div>
+									)}
+								</a>
+							</li>
+						))
+					}
+				</ul>
+			</section>
+		</main>
+		<Footer />
+		<style>
+			main {
+				width: 960px;
+				max-width: calc(100% - 2rem);
+				margin: auto;
+				padding: 3rem 1rem;
+			}
+			section {
+				margin-bottom: 3rem;
+			}
+			h1 {
+				font-size: 2.5rem;
+				margin-bottom: 2rem;
+			}
+			.post-list {
+				list-style: none;
+				padding: 0;
+				display: grid;
+				gap: 2rem;
+			}
+			.post-card {
+				border: 1px solid #ddd;
+				border-radius: 8px;
+				padding: 1.5rem;
+				transition: transform 0.2s, box-shadow 0.2s;
+			}
+			.post-card:hover {
+				transform: translateY(-4px);
+				box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+			}
+			.post-card a {
+				text-decoration: none;
+				color: inherit;
+			}
+			.post-card h2 {
+				margin: 0 0 0.5rem 0;
+				font-size: 1.5rem;
+				color: rgb(var(--accent));
+			}
+			.date {
+				color: #666;
+				font-size: 0.9rem;
+				margin: 0.5rem 0;
+			}
+			.description {
+				margin: 1rem 0;
+				line-height: 1.6;
+			}
+			.tags {
+				display: flex;
+				gap: 0.5rem;
+				flex-wrap: wrap;
+				margin-top: 1rem;
+			}
+			.tag {
+				background: rgb(var(--accent-light));
+				color: rgb(var(--accent-dark));
+				padding: 0.25rem 0.75rem;
+				border-radius: 4px;
+				font-size: 0.85rem;
+			}
+		</style>
+	</body>
+</html>

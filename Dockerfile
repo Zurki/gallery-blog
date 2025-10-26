@@ -1,16 +1,16 @@
 # Stage 1: Build the Astro site
-FROM --platform=linux/amd64 node:20-alpine AS builder
+FROM node:20-slim AS builder
 
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
-
-# Install dependencies (use npm install instead of npm ci to properly handle optional deps)
-RUN npm install
-
-# Copy source files (node_modules should be excluded via .dockerignore)
+# Copy all source files first
 COPY . .
+
+# Remove any node_modules and package-lock that might have been copied
+RUN rm -rf node_modules package-lock.json
+
+# Reinstall to generate fresh package-lock and install correct binaries
+RUN npm install
 
 # Build the static site
 RUN npm run build

@@ -1,0 +1,141 @@
+---
+// Theme toggle component for switching between light and dark Gruvbox themes
+---
+
+<button id="theme-toggle" aria-label="Toggle theme" title="Toggle theme">
+	<div class="icon-wrapper">
+		<svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+			<circle cx="12" cy="12" r="5"></circle>
+			<line x1="12" y1="1" x2="12" y2="3"></line>
+			<line x1="12" y1="21" x2="12" y2="23"></line>
+			<line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+			<line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+			<line x1="1" y1="12" x2="3" y2="12"></line>
+			<line x1="21" y1="12" x2="23" y2="12"></line>
+			<line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+			<line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+		</svg>
+		<svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+			<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+		</svg>
+	</div>
+</button>
+
+<style>
+	#theme-toggle {
+		background: var(--bg2);
+		border: 2px solid var(--bg3);
+		cursor: pointer;
+		padding: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: var(--fg1);
+		transition: all 0.3s ease;
+		border-radius: 8px;
+		width: 44px;
+		height: 44px;
+		position: relative;
+		overflow: hidden;
+	}
+	
+	#theme-toggle:hover {
+		color: var(--accent);
+		background: var(--bg3);
+		border-color: var(--accent);
+		transform: scale(1.05);
+	}
+	
+	#theme-toggle:active {
+		transform: scale(0.95);
+	}
+	
+	.icon-wrapper {
+		position: relative;
+		width: 20px;
+		height: 20px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	
+	.sun-icon,
+	.moon-icon {
+		position: absolute;
+		width: 20px;
+		height: 20px;
+		transition: all 0.3s ease;
+	}
+	
+	/* Light mode - show sun */
+	[data-theme="light"] .sun-icon,
+	:root:not([data-theme]) .sun-icon {
+		opacity: 1;
+		transform: rotate(0deg) scale(1);
+	}
+	
+	[data-theme="light"] .moon-icon,
+	:root:not([data-theme]) .moon-icon {
+		opacity: 0;
+		transform: rotate(90deg) scale(0);
+	}
+	
+	/* Dark mode - show moon */
+	[data-theme="dark"] .sun-icon {
+		opacity: 0;
+		transform: rotate(-90deg) scale(0);
+	}
+	
+	[data-theme="dark"] .moon-icon {
+		opacity: 1;
+		transform: rotate(0deg) scale(1);
+	}
+	
+	/* Add a subtle glow effect on hover in dark mode */
+	[data-theme="dark"] #theme-toggle:hover {
+		box-shadow: 0 0 12px rgba(131, 165, 152, 0.3);
+	}
+	
+	/* Add a subtle shadow in light mode */
+	[data-theme="light"] #theme-toggle,
+	:root:not([data-theme]) #theme-toggle {
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	}
+	
+	[data-theme="light"] #theme-toggle:hover,
+	:root:not([data-theme]) #theme-toggle:hover {
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+	}
+</style>
+
+<script>
+	// Theme toggle functionality
+	const theme = (() => {
+		if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+			return localStorage.getItem('theme');
+		}
+		if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+			return 'dark';
+		}
+		return 'light';
+	})();
+	
+	if (theme === 'light') {
+		document.documentElement.setAttribute('data-theme', 'light');
+	} else {
+		document.documentElement.setAttribute('data-theme', 'dark');
+	}
+	
+	window.localStorage.setItem('theme', theme);
+	
+	const handleToggleClick = () => {
+		const element = document.documentElement;
+		const currentTheme = element.getAttribute('data-theme');
+		const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+		
+		element.setAttribute('data-theme', newTheme);
+		localStorage.setItem('theme', newTheme);
+	};
+	
+	document.getElementById('theme-toggle')?.addEventListener('click', handleToggleClick);
+</script>

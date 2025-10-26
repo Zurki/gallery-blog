@@ -1,20 +1,24 @@
 {
   "main": {
-    "id": "cf651c9738348f77",
+    "id": "62ac36424c9d6ef6",
     "type": "split",
     "children": [
       {
-        "id": "a02f86159e6627df",
+        "id": "39523bcd19d8cf29",
         "type": "tabs",
         "children": [
           {
-            "id": "ff97852cbd3b83e4",
+            "id": "4a9955cbbdc827fc",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "welcome-to-my-blog.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "New tab"
+              "title": "welcome-to-my-blog"
             }
           }
         ]
@@ -23,15 +27,15 @@
     "direction": "vertical"
   },
   "left": {
-    "id": "959ec8918749a18b",
+    "id": "fb37c4efaf1eb4e2",
     "type": "split",
     "children": [
       {
-        "id": "8188344f57dc6046",
+        "id": "430c66d8f2bdd2fd",
         "type": "tabs",
         "children": [
           {
-            "id": "d5f0793e21e11a0a",
+            "id": "205d09502698a75c",
             "type": "leaf",
             "state": {
               "type": "file-explorer",
@@ -44,7 +48,7 @@
             }
           },
           {
-            "id": "3b2b536bde94beb1",
+            "id": "aca10eaa24f5f4fb",
             "type": "leaf",
             "state": {
               "type": "search",
@@ -61,7 +65,7 @@
             }
           },
           {
-            "id": "da8fe9fce6044797",
+            "id": "407f6f55861af6e4",
             "type": "leaf",
             "state": {
               "type": "bookmarks",
@@ -77,19 +81,20 @@
     "width": 300
   },
   "right": {
-    "id": "24bcaf13d3dc75bb",
+    "id": "4e510083d4a60cdd",
     "type": "split",
     "children": [
       {
-        "id": "dbefe7e50eb9bd2a",
+        "id": "bf7818b1fcdea62e",
         "type": "tabs",
         "children": [
           {
-            "id": "37f0a8d277549dee",
+            "id": "2f63d61cc04939a0",
             "type": "leaf",
             "state": {
               "type": "backlink",
               "state": {
+                "file": "welcome-to-my-blog.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -99,24 +104,25 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks"
+              "title": "Backlinks for welcome-to-my-blog"
             }
           },
           {
-            "id": "d60280545bb3d38e",
+            "id": "7f0738046e617fcb",
             "type": "leaf",
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "welcome-to-my-blog.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links"
+              "title": "Outgoing links from welcome-to-my-blog"
             }
           },
           {
-            "id": "f11bc88061e0758d",
+            "id": "92d91bb65840d1e3",
             "type": "leaf",
             "state": {
               "type": "tag",
@@ -131,17 +137,18 @@
             }
           },
           {
-            "id": "ea0c543cd5557cbe",
+            "id": "a6a1f2a684e743c4",
             "type": "leaf",
             "state": {
               "type": "outline",
               "state": {
+                "file": "welcome-to-my-blog.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline"
+              "title": "Outline of welcome-to-my-blog"
             }
           }
         ]
@@ -162,6 +169,9 @@
       "bases:Create new base": false
     }
   },
-  "active": "ff97852cbd3b83e4",
-  "lastOpenFiles": []
+  "active": "4a9955cbbdc827fc",
+  "lastOpenFiles": [
+    "obsidian-for-developers.md",
+    "getting-started-with-docker.md"
+  ]
 }

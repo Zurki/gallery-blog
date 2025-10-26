@@ -67,14 +67,16 @@ const posts = (await getCollection('blog'))
 				gap: 2rem;
 			}
 			.post-card {
-				border: 1px solid #ddd;
+				border: 1px solid var(--bg3);
 				border-radius: 8px;
 				padding: 1.5rem;
-				transition: transform 0.2s, box-shadow 0.2s;
+				background: var(--bg1);
+				transition: transform 0.2s, box-shadow 0.2s, background-color 0.3s ease;
 			}
 			.post-card:hover {
 				transform: translateY(-4px);
-				box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+				box-shadow: var(--box-shadow);
+				background: var(--bg2);
 			}
 			.post-card a {
 				text-decoration: none;
@@ -83,10 +85,10 @@ const posts = (await getCollection('blog'))
 			.post-card h2 {
 				margin: 0 0 0.5rem 0;
 				font-size: 1.5rem;
-				color: rgb(var(--accent));
+				color: var(--accent);
 			}
 			.date {
-				color: #666;
+				color: var(--fg3);
 				font-size: 0.9rem;
 				margin: 0.5rem 0;
 			}
@@ -101,11 +103,12 @@ const posts = (await getCollection('blog'))
 				margin-top: 1rem;
 			}
 			.tag {
-				background: rgb(var(--accent-light));
-				color: rgb(var(--accent-dark));
+				background: var(--bg3);
+				color: var(--orange);
 				padding: 0.25rem 0.75rem;
 				border-radius: 4px;
 				font-size: 0.85rem;
+				font-weight: 600;
 			}
 		</style>
 	</body>

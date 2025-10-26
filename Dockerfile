@@ -6,10 +6,10 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci
+# Install dependencies (use npm install instead of npm ci to properly handle optional deps)
+RUN npm install
 
-# Copy source files
+# Copy source files (node_modules should be excluded via .dockerignore)
 COPY . .
 
 # Build the static site

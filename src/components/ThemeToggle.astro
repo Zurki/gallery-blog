@@ -39,11 +39,17 @@
 		overflow: hidden;
 	}
 	
-	#theme-toggle:hover {
-		color: var(--accent);
+	#theme-toggle:hover,
+	#theme-toggle:focus {
+		color: var(--secondary);
 		background: var(--bg3);
-		border-color: var(--accent);
+		border-color: var(--secondary);
 		transform: scale(1.05);
+	}
+	
+	#theme-toggle:focus {
+		outline: 2px solid var(--secondary);
+		outline-offset: 2px;
 	}
 	
 	#theme-toggle:active {
@@ -91,9 +97,10 @@
 		transform: rotate(0deg) scale(1);
 	}
 	
-	/* Add a subtle glow effect on hover in dark mode */
-	[data-theme="dark"] #theme-toggle:hover {
-		box-shadow: 0 0 12px rgba(131, 165, 152, 0.3);
+	/* Add a subtle glow effect on hover/focus in dark mode */
+	[data-theme="dark"] #theme-toggle:hover,
+	[data-theme="dark"] #theme-toggle:focus {
+		box-shadow: 0 0 12px rgba(224, 54, 139, 0.4);
 	}
 	
 	/* Add a subtle shadow in light mode */
@@ -103,7 +110,9 @@
 	}
 	
 	[data-theme="light"] #theme-toggle:hover,
-	:root:not([data-theme]) #theme-toggle:hover {
+	[data-theme="light"] #theme-toggle:focus,
+	:root:not([data-theme]) #theme-toggle:hover,
+	:root:not([data-theme]) #theme-toggle:focus {
 		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 	}
 </style>

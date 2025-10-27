@@ -1,0 +1,262 @@
+---
+import { getCollection } from 'astro:content';
+
+const allPosts = await getCollection('blog');
+const currentSlug = Astro.url.pathname.split('/').filter(Boolean).pop();
+const currentPost = allPosts.find(post => post.slug === currentSlug);
+
+if (!currentPost) {
+	// If no current post, don't render
+	return null;
+}
+
+// Find connections based on tags and content links
+const connectedSlugs = new Set<string>();
+const links = [];
+
+// Get current post content as string
+const currentContent = currentPost.body || '';
+const currentTags = currentPost.data.tags || [];
+
+// Find wiki-style links [[post-name]] in content
+const wikiLinkRegex = /\[\[([^\]]+)\]\]/g;
+let match;
+while ((match = wikiLinkRegex.exec(currentContent)) !== null) {
+	const linkedTitle = match[1].toLowerCase().trim();
+	const linkedPost = allPosts.find(p => 
+		p.data.title.toLowerCase() === linkedTitle || 
+		p.slug === linkedTitle
+	);
+	if (linkedPost && linkedPost.slug !== currentSlug) {
+		connectedSlugs.add(linkedPost.slug);
+		links.push({
+			source: currentSlug,
+			target: linkedPost.slug
+		});
+	}
+}
+
+// Find posts with shared tags
+if (currentTags.length > 0) {
+	allPosts.forEach(post => {
+		if (post.slug === currentSlug) return;
+		const postTags = post.data.tags || [];
+		const sharedTags = postTags.filter(tag => currentTags.includes(tag));
+		if (sharedTags.length > 0) {
+			connectedSlugs.add(post.slug);
+			// Only add link if not already added
+			if (!links.some(l => l.source === currentSlug && l.target === post.slug)) {
+				links.push({
+					source: currentSlug,
+					target: post.slug
+				});
+			}
+		}
+	});
+}
+
+// Build nodes - only current post and connected posts
+const nodes = [
+	{
+		id: currentSlug,
+		title: currentPost.data.title,
+		isCurrent: true
+	},
+	...Array.from(connectedSlugs).map(slug => {
+		const post = allPosts.find(p => p.slug === slug);
+		return {
+			id: slug,
+			title: post?.data.title || slug,
+			isCurrent: false
+		};
+	})
+];
+
+const graphData = { nodes, links };
+
+// Don't render if no connections
+if (nodes.length <= 1) {
+	return null;
+}
+---
+
+<div class="graph-container">
+	<div class="graph-header">
+		<h3>Graph View</h3>
+	</div>
+	<canvas id="graph-canvas"></canvas>
+</div>
+
+<style>
+	.graph-container {
+		width: 280px;
+		height: 350px;
+		background: var(--bg1);
+		border: 1px solid var(--bg3);
+		border-radius: 8px;
+		overflow: hidden;
+		box-shadow: var(--box-shadow);
+	}
+	
+	.graph-header {
+		padding: 0.5rem 0.75rem;
+		background: var(--bg2);
+		border-bottom: 1px solid var(--bg3);
+	}
+	
+	.graph-header h3 {
+		margin: 0;
+		font-size: 0.85rem;
+		color: var(--fg1);
+		font-weight: 600;
+	}
+	
+	#graph-canvas {
+		width: 100%;
+		height: calc(100% - 38px);
+		display: block;
+	}
+</style>
+
+<script define:vars={{ graphData }}>
+	const canvas = document.getElementById('graph-canvas');
+	const ctx = canvas.getContext('2d');
+	
+	// Set canvas size
+	const resizeCanvas = () => {
+		const rect = canvas.getBoundingClientRect();
+		canvas.width = rect.width * window.devicePixelRatio;
+		canvas.height = rect.height * window.devicePixelRatio;
+		ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+	};
+	
+	resizeCanvas();
+	window.addEventListener('resize', resizeCanvas);
+	
+	// Simple force-directed graph
+	const width = canvas.getBoundingClientRect().width;
+	const height = canvas.getBoundingClientRect().height;
+	
+	// Initialize node positions in a flatter layout
+	const nodes = graphData.nodes.map((node, i) => {
+		const row = Math.floor(i / 3);
+		const col = i % 3;
+		return {
+			...node,
+			x: 50 + col * 90,
+			y: 50 + row * 70,
+			vx: 0,
+			vy: 0
+		};
+	});
+	
+	const links = graphData.links.map(link => ({
+		source: nodes.find(n => n.id === link.source),
+		target: nodes.find(n => n.id === link.target)
+	}));
+	
+	// Get colors from CSS variables
+	const styles = getComputedStyle(document.documentElement);
+	const primaryColor = styles.getPropertyValue('--primary').trim() || '#e1b735';
+	const secondaryColor = styles.getPropertyValue('--secondary').trim() || '#e0368b';
+	const fg1Color = styles.getPropertyValue('--fg1').trim() || '#f5f1eb';
+	const bg3Color = styles.getPropertyValue('--bg3').trim() || '#4a3a5a';
+	
+	// Animation loop with gentler forces for flatter layout
+	function simulate() {
+		const alpha = 0.2;
+		
+		// Gentle center force
+		nodes.forEach(node => {
+			node.vx += (width / 2 - node.x) * 0.005;
+			node.vy += (height / 2 - node.y) * 0.005;
+		});
+		
+		// Link force - keep connections
+		links.forEach(link => {
+			const dx = link.target.x - link.source.x;
+			const dy = link.target.y - link.source.y;
+			const distance = Math.sqrt(dx * dx + dy * dy) || 1;
+			const force = (distance - 70) * 0.05;
+			
+			const fx = (dx / distance) * force;
+			const fy = (dy / distance) * force;
+			
+			link.source.vx += fx;
+			link.source.vy += fy;
+			link.target.vx -= fx;
+			link.target.vy -= fy;
+		});
+		
+		// Gentle repulsion force
+		for (let i = 0; i < nodes.length; i++) {
+			for (let j = i + 1; j < nodes.length; j++) {
+				const dx = nodes[j].x - nodes[i].x;
+				const dy = nodes[j].y - nodes[i].y;
+				const distance = Math.sqrt(dx * dx + dy * dy) || 1;
+				const force = 200 / (distance * distance);
+				
+				const fx = (dx / distance) * force;
+				const fy = (dy / distance) * force;
+				
+				nodes[i].vx -= fx;
+				nodes[i].vy -= fy;
+				nodes[j].vx += fx;
+				nodes[j].vy += fy;
+			}
+		}
+		
+		// Update positions
+		nodes.forEach(node => {
+			node.x += node.vx * alpha;
+			node.y += node.vy * alpha;
+			node.vx *= 0.85;
+			node.vy *= 0.85;
+			
+			// Keep in bounds
+			node.x = Math.max(15, Math.min(width - 15, node.x));
+			node.y = Math.max(15, Math.min(height - 15, node.y));
+		});
+	}
+	
+	function draw() {
+		ctx.clearRect(0, 0, width, height);
+		
+		// Draw links
+		ctx.strokeStyle = bg3Color;
+		ctx.lineWidth = 1.5;
+		links.forEach(link => {
+			ctx.beginPath();
+			ctx.moveTo(link.source.x, link.source.y);
+			ctx.lineTo(link.target.x, link.target.y);
+			ctx.stroke();
+		});
+		
+		// Draw nodes
+		nodes.forEach(node => {
+			ctx.beginPath();
+			ctx.arc(node.x, node.y, node.isCurrent ? 7 : 5, 0, 2 * Math.PI);
+			ctx.fillStyle = node.isCurrent ? secondaryColor : primaryColor;
+			ctx.fill();
+			
+			if (node.isCurrent) {
+				ctx.strokeStyle = secondaryColor;
+				ctx.lineWidth = 2;
+				ctx.stroke();
+			}
+		});
+	}
+	
+	// Animation
+	let frame = 0;
+	function animate() {
+		if (frame < 60) {
+			simulate();
+			frame++;
+		}
+		draw();
+		requestAnimationFrame(animate);
+	}
+	
+	animate();
+</script>

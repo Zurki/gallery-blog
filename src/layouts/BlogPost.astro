@@ -4,6 +4,7 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
+import GraphView from '../components/GraphView.astro';
 
 type Props = CollectionEntry<'blog'>['data'] | {
 	title: string;
@@ -26,6 +27,25 @@ const displayDate = date || pubDate;
 				width: calc(100% - 2em);
 				max-width: 100%;
 				margin: 0;
+				position: relative;
+			}
+			
+			.content-wrapper {
+				max-width: 720px;
+				margin: 0 auto;
+			}
+			
+			.sidebar {
+				position: fixed;
+				right: 2rem;
+				top: 100px;
+				z-index: 10;
+			}
+			
+			@media (max-width: 1400px) {
+				.sidebar {
+					display: none;
+				}
 			}
 			.hero-image {
 				width: 100%;
@@ -37,8 +57,9 @@ const displayDate = date || pubDate;
 				box-shadow: var(--box-shadow);
 			}
 			.prose {
-				width: 852px;
-				margin: auto;
+				width: 100%;
+				max-width: 720px;
+				padding: 1em 0.5em;
 				color: var(--fg1);
 			}
 			.title {
@@ -63,30 +84,35 @@ const displayDate = date || pubDate;
 	<body>
 		<Header />
 		<main>
-			<article>
-				<div class="prose">
-					<div class="title">
-						{displayDate && (
-							<div class="date">
-								<FormattedDate date={displayDate} />
-							</div>
-						)}
-						<h1>{title}</h1>
-						{tags && tags.length > 0 && (
-							<div class="tags">
-								{tags.map((tag) => (
-									<span class="tag">{tag}</span>
-								))}
-							</div>
-						)}
-						<hr />
+			<div class="content-wrapper">
+				<article>
+					<div class="prose">
+						<div class="title">
+							{displayDate && (
+								<div class="date">
+									<FormattedDate date={displayDate} />
+								</div>
+							)}
+							<h1>{title}</h1>
+							{tags && tags.length > 0 && (
+								<div class="tags">
+									{tags.map((tag) => (
+										<span class="tag">{tag}</span>
+									))}
+								</div>
+							)}
+							<hr />
+						</div>
+						<slot />
+						<div class="back-link">
+							<a href="/">← Back to all posts</a>
+						</div>
 					</div>
-					<slot />
-					<div class="back-link">
-						<a href="/">← Back to all posts</a>
-					</div>
-				</div>
-			</article>
+				</article>
+			</div>
+			<aside class="sidebar">
+				<GraphView />
+			</aside>
 		</main>
 		<Footer />
 		<style is:inline>

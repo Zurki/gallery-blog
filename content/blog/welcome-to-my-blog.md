@@ -9,6 +9,7 @@ tags: ["welcome", "obsidian", "astro"]
 
 This is my first blog post, written in **Obsidian** and published with **Astro**.
 
+[[getting-started-with-docker]]
 ## Why This Setup?
 
 I chose this combination because:
